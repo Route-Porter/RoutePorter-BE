@@ -361,7 +361,7 @@
                   "type": "string",
                   "description": "도시명"
                 },
-                "features": {
+                "points": {
                   "type": "array",
                   "items": {
                     "type": "string"
