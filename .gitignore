@@ -130,5 +130,7 @@ dist
 .pnp.*
 
 db.connect.js
+ecosystem.config.js
+*.log
 
 .idea
