@@ -291,6 +291,8 @@
         "properties": {
           "destinations":  {
             "type": "array",
+            "items" : {
+              "type": "object",
             "properties": {
               "region": {
                 "type": "string",
@@ -311,6 +313,7 @@
             },
             "description": "여행지 정보"
           }
+        }
         },
         "required": [
           "destinations"
