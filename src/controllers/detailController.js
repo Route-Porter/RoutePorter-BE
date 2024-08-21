@@ -5,11 +5,19 @@ import TourService from "../services/tourService.js";
 /**
  * 
  * @param {Request} req 
- * @param {Response} res  
+ * @param {Response} res 
  */
 export async function getDetail(req, res) {
-  const detailDTO = new DetailDTO(req.body);
 
+  
+  const features = req.query.features.split(',').map((word) => word.replace(/[\[|\]]/gi, ''))
+
+  const detailDTO = new DetailDTO({
+    region: req.query.region,
+    district: req.query.district,
+    features: features
+  });
+  
   try {
     const gptRes = await GptService.callChatGPT(detailDTO);
     const tourRes = await TourService.callTourApi(detailDTO);

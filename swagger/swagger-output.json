@@ -114,141 +114,54 @@
     },
     "/api/detail": {
       "get": {
-        "summary": "여행지 상세 정보 요청",
-        "description": "여행지에 대한 상세 정보를 제공합니다. 여행지의 교통, 숙박, 음식, 그리고 주요 관광명소에 대한 정보를 포함합니다.",
+        "summary": "상세정보 조회",
+        "parameters": [
+          {
+            "name": "region",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "district",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "features",
+            "in": "query",
+            "required": true,
+            "type": "string",
+            "description": "JSON stringified array (ex: '[\"해변\", \"자연\", \"해산물\"]')"
+          }
+        ],
         "responses": {
           "200": {
-            "description": "성공적인 응답, 여행지에 대한 상세 정보가 반환됩니다.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "gptComment": {
-                      "type": "object",
-                      "properties": {
-                        "traffic": {
-                          "type": "string",
-                          "example": "교통수단: \n창원에서는 다양한 교통수단을 이용할 수 있습니다. 창원은 대중교통이 잘 발달해 있고, 주변 여행지를 효율적으로 이동할 수 있습니다. 또한, 창원 중심부에서는 걸어서도 주요 관광지를 찾아볼 수 있습니다.\n[목록]\n1. 한국철도공사 (korail.com)\n2. 창원시시내버스정보 (cwbus.changwon.go.kr)\n3. 창원시택시서비스 (taxi.changwon.go.kr)\n4. 대한항공 (kr.koreanair.com)\n5. 창원지하철 (changwonmetro.go.kr)\n\n"
-                        },
-                        "hotel": {
-                          "type": "string",
-                          "example": "숙박시설: \n창원에는 다양한 숙박시설이 있으며, 사용자의 기호에 맞춰 선택하실 수 있습니다. 편안한 호텔부터 특색 있는 게스트하우스, 로컬이 주는 따뜻한 환대를 느낄 수 있는 민박 등 다양한 숙박시설이 준비되어 있습니다.\n[목록]\n1. 창원호텔 (changwonhotel.com)\n2. 창원 게스트하우스 (changwonguesthouse.com)\n3. 창원시민박협회 (changwonminbak.com)\n4. 창원 센트럴 파크 호텔 (centralparkhotel.co.kr)\n5. 풀만 앰배서더 창원 (pullmanchangwon.com)\n\n"
-                        },
-                        "food": {
-                          "type": "string",
-                          "example": "유명음식: \n1. 해물탕 - 지리영어탕, 용마랑, 낙동강식당, 고래식당, 모락식당\n2. 간장게장 - 부영식당, 해우리, 청해수산, 평산식당, J's Crab \n3. 산낙지 - 산성횟집, 진낙성, 창원산낙지, 산낙지마을, 미진산낙지\n4. 명태회 - 명일전복, 창원명태회, 명물식당, 묵호직영점, 명태회마을\n5. 굴구이 - 굴바위, 굴구이마을, 롯데리아 창원점, G&J Korean BBQ, 청해 수산"
-                        }
-                      }
-                    },
-                    "tourData": {
-                      "type": "object",
-                      "properties": {
-                        "item": {
-                          "type": "array",
-                          "items": {
-                            "type": "object",
-                            "properties": {
-                              "addr1": {
-                                "type": "string",
-                                "example": "경상남도 창원시 성산구 창원천로94번길 19"
-                              },
-                              "addr2": {
-                                "type": "string",
-                                "example": ""
-                              },
-                              "areacode": {
-                                "type": "string",
-                                "example": "36"
-                              },
-                              "booktour": {
-                                "type": "string",
-                                "example": ""
-                              },
-                              "cat1": {
-                                "type": "string",
-                                "example": "A04"
-                              },
-                              "cat2": {
-                                "type": "string",
-                                "example": "A0401"
-                              },
-                              "cat3": {
-                                "type": "string",
-                                "example": "A04011000"
-                              },
-                              "contentid": {
-                                "type": "string",
-                                "example": "3306848"
-                              },
-                              "contenttypeid": {
-                                "type": "string",
-                                "example": "38"
-                              },
-                              "createdtime": {
-                                "type": "string",
-                                "format": "date-time",
-                                "example": "2024-02-21T20:25:45Z"
-                              },
-                              "firstimage": {
-                                "type": "string",
-                                "format": "uri",
-                                "example": "http://tong.visitkorea.or.kr/cms/resource/34/3313334_image2_1.jpg"
-                              },
-                              "firstimage2": {
-                                "type": "string",
-                                "format": "uri",
-                                "example": "http://tong.visitkorea.or.kr/cms/resource/34/3313334_image3_1.jpg"
-                              },
-                              "cpyrhtDivCd": {
-                                "type": "string",
-                                "example": "Type3"
-                              },
-                              "mapx": {
-                                "type": "string",
-                                "example": "128.6534026655"
-                              },
-                              "mapy": {
-                                "type": "string",
-                                "example": "35.2395226893"
-                              },
-                              "mlevel": {
-                                "type": "string",
-                                "example": "6"
-                              },
-                              "modifiedtime": {
-                                "type": "string",
-                                "format": "date-time",
-                                "example": "2024-06-21T23:39:43Z"
-                              },
-                              "sigungucode": {
-                                "type": "string",
-                                "example": "16"
-                              },
-                              "tel": {
-                                "type": "string",
-                                "example": ""
-                              },
-                              "title": {
-                                "type": "string",
-                                "example": "올리브영 창원시티세븐"
-                              }
-                            }
-                          }
-                        }
-                      }
-                    }
-                  }
+            "description": "Successful response",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "data": {
+                  "type": "object"
                 }
               }
             }
           },
           "400": {
-            "description": "잘못된 요청"
+            "description": "Bad request",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string"
+                }
+              }
+            }
           }
         }
       }
-    }
+    }  
   },
   "components": {
     "schemas": {
