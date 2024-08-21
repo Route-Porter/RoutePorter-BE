@@ -289,14 +289,14 @@
       "DetailedTravelInfoRequest": {
       "type": "object",
         "properties": {
-          "destinations": {
-            "type": "object",
+          "destinations":  {
+            "type": "array",
             "properties": {
               "region": {
                 "type": "string",
                 "description": "지역명"
               },
-              "city": {
+              "district": {
                 "type": "string",
                 "description": "도시명"
               },
@@ -304,7 +304,8 @@
                 "type": "array",
                 "items": {
                   "type": "string"
-                },
+                } 
+              ,
                 "description": "특징"
               }
             },
