@@ -15,6 +15,9 @@ export class ChatDto {
         freeTime,
         importantFactors,
         destinations,
+        region,
+        city,
+        points
     }) {
         this.schedule = schedule;
         this.groupComposition = groupComposition;
@@ -31,15 +34,22 @@ export class ChatDto {
         this.freeTime = freeTime;
         this.importantFactors = importantFactors;
         this.destinations=destinations;
+        this.region=region;
+        this.city=city;
+        this.points=points;
     }
 }
 
+
 export class destinationDto{
     constructor(
-       {region,
+       {
+           region,
            city,
            points}
-    ){this.region=region;
+    ){
+        this.region=region;
         this.city=city;
         this.points=points;}
 }
+
