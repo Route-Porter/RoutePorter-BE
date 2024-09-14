@@ -289,6 +289,78 @@
       "DetailedTravelInfoRequest": {
       "type": "object",
         "properties": {
+          "answers": {
+            "schedule": {
+              "type": "string",
+              "description": "일정 정보"
+            },
+            "groupComposition": {
+              "type": "object",
+              "properties": {
+                "adults": {
+                  "type": "integer",
+                  "description": "성인 수"
+                },
+                "children": {
+                  "type": "integer",
+                  "description": "어린이 수"
+                },
+                "infants": {
+                  "type": "integer",
+                  "description": "유아 수"
+                }
+              },
+              "description": "상세 인원 정보"
+            },
+            "purpose": {
+              "type": "string",
+              "description": "여행의 목적"
+            },
+            "budget": {
+              "type": "string",
+              "description": "여행 예산"
+            },
+            "keyElement": {
+              "type": "string",
+              "description": "여행 중 가장 중요하게 생각하는 요소"
+            },
+            "accommodation": {
+              "type": "string",
+              "description": "선호하는 숙박 시설"
+            },
+            "transport": {
+              "type": "string",
+              "description": "선호하는 이동 수단"
+            },
+            "companion": {
+              "type": "string",
+              "description": "동행자"
+            },
+            "favorite": {
+              "type": "string",
+              "description": "특히 마음에 들었던 여행지"
+            },
+            "favoriteReason": {
+              "type": "string",
+              "description": "마음에 들었던 이유"
+            },
+            "specialNeeds": {
+              "type": "string",
+              "description": "필요하거나 피하고 싶은 요소"
+            },
+            "recommendationType": {
+              "type": "string",
+              "description": "AI 추천 방식"
+            },
+            "freeTime": {
+              "type": "string",
+              "description": "여행 중 어느 정도의 자유 시간을 원하시나요?"
+            },
+            "importantFactors": {
+              "type": "string",
+              "description": "위 답변 중 가장 중요시 생각하는 단어"
+            }
+          },
           "destinations":  {
             "type": "array",
             "items" : {
@@ -316,6 +388,7 @@
         }
         },
         "required": [
+          "answers",
           "destinations"
         ]
       },
