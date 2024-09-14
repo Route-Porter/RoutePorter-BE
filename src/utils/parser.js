@@ -45,17 +45,17 @@ export function parseTravelRoute(responseData) {
 
     // 날짜별 데이터로 분리합니다.
     const dayRegex = /\[\d+일차\]/g;
+    const dayMatches = [...trimmedData.matchAll(dayRegex)];
     const days = trimmedData.split(dayRegex).filter(day => day.trim() !== '');
 
     // 날짜별 정보를 담을 배열
     const parsedDays = [];
 
-    days.forEach((dayContent, index) => {
-        const dayMatch = trimmedData.match(dayRegex)[index];
-        const dayNumber = parseInt(dayMatch.replace(/\[|\]일차/, ''), 10);
+    dayMatches.forEach((match, index) => {
+        const dayNumber = parseInt(match[0].replace(/\[|\]일차/, ''), 10);
 
         // 날짜별 장소 정보를 파싱합니다.
-        const lines = dayContent.trim().split('\n').map(line => line.trim()).filter(line => line);
+        const lines = days[index].trim().split('\n').map(line => line.trim()).filter(line => line);
 
         const places = [];
         let currentPlace = null;
@@ -103,6 +103,7 @@ export function parseTravelRoute(responseData) {
 
     return parsedDays;
 }
+
 
 
 
