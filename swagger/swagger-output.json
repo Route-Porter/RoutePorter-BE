@@ -2,7 +2,7 @@
   "openapi": "3.0.0",
   "info": {
     "title": "Route Porter API",
-    "description": "Route Porter API 설명",
+    "description": "API for generating and sharing travel routes.",
     "version": "1.0.0"
   },
   "servers": [
@@ -74,6 +74,9 @@
           },
           "400": {
             "description": "잘못된 요청"
+          },
+          "500": {
+            "description": "서버 오류, 여행 루트 생성 실패"
           }
         }
       }
@@ -115,57 +118,179 @@
     "/api/detail": {
       "get": {
         "summary": "상세정보 조회",
+        "description": "주어진 지역과 특징을 기반으로 상세 정보를 조회합니다.",
         "parameters": [
           {
             "name": "region",
             "in": "query",
             "required": true,
-            "type": "string"
+            "schema": {
+              "type": "string",
+              "description": "여행 지역"
+            }
           },
           {
             "name": "district",
             "in": "query",
             "required": true,
-            "type": "string"
+            "schema": {
+              "type": "string",
+              "description": "여행 도시"
+            }
           },
           {
             "name": "features",
             "in": "query",
             "required": true,
-            "type": "string",
-            "description": "JSON stringified array (ex: '[\"해변\", \"자연\", \"해산물\"]')"
+            "schema": {
+              "type": "string",
+              "description": "JSON 문자열로 된 특징 배열 (예: '[\"해변\", \"자연\", \"해산물\"]')"
+            }
           }
         ],
         "responses": {
           "200": {
-            "description": "Successful response",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "data": {
-                  "type": "object"
+            "description": "성공적인 응답",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "gptComment": {
+                      "type": "object",
+                      "properties": {
+                        "traffic": {
+                          "type": "object",
+                          "properties": {
+                            "reason": {
+                              "type": "string",
+                              "description": "교통수단 추천 이유"
+                            },
+                            "sites": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              },
+                              "description": "교통수단 사이트 목록"
+                            }
+                          }
+                        },
+                        "hotel": {
+                          "type": "object",
+                          "properties": {
+                            "reason": {
+                              "type": "string",
+                              "description": "숙박시설 추천 이유"
+                            },
+                            "sites": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              },
+                              "description": "숙박시설 사이트 목록"
+                            }
+                          }
+                        },
+                        "food": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "foodName": {
+                                "type": "string",
+                                "description": "음식 이름"
+                              },
+                              "shops": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                },
+                                "description": "가게 목록"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "tourData": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "day": {
+                            "type": "integer",
+                            "description": "여행일"
+                          },
+                          "places": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "name": {
+                                  "type": "string",
+                                  "description": "장소 이름"
+                                },
+                                "hours": {
+                                  "type": "string",
+                                  "description": "영업 시간"
+                                },
+                                "attractions": {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "string"
+                                  },
+                                  "description": "관광 명소"
+                                },
+                                "popularMenu": {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "string"
+                                  },
+                                  "description": "인기 메뉴"
+                                },
+                                "recommendations": {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "string"
+                                  },
+                                  "description": "추천 사항"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "required": ["gptComment", "tourData"]
                 }
               }
             }
           },
           "400": {
-            "description": "Bad request",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "error": {
-                  "type": "string"
+            "description": "잘못된 요청",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "description": "오류 메시지"
+                    }
+                  },
+                  "required": ["error"]
                 }
               }
             }
           }
         }
       }
-    }  
+    }
   },
   "components": {
     "schemas": {
-"ChatDto": {
+      "ChatDto": {
         "type": "object",
         "properties": {
           "schedule": {
@@ -253,10 +378,8 @@
           "specialNeeds",
           "recommendationType",
           "freeTime",
-          "importantFactors",
-          "destinations"
+          "importantFactors"
         ]
-  
       },
       "TravelRecommendations": {
         "type": "object",
@@ -287,174 +410,206 @@
         }
       },
       "DetailedTravelInfoRequest": {
-      "type": "object",
+        "type": "object",
         "properties": {
-          "destinations":  {
-            "type": "array",
-            "items" : {
-              "type": "object",
+          "answers": {
+            "type": "object",
+            "properties": {
+              "schedule": {
+                "type": "string",
+                "description": "일정 정보"
+              },
+              "groupComposition": {
+                "type": "object",
+                "properties": {
+                  "adults": {
+                    "type": "integer",
+                    "description": "성인 수"
+                  },
+                  "children": {
+                    "type": "integer",
+                    "description": "어린이 수"
+                  },
+                  "infants": {
+                    "type": "integer",
+                    "description": "유아 수"
+                  }
+                },
+                "description": "상세 인원 정보"
+              },
+              "purpose": {
+                "type": "string",
+                "description": "여행의 목적"
+              },
+              "budget": {
+                "type": "string",
+                "description": "여행 예산"
+              },
+              "keyElement": {
+                "type": "string",
+                "description": "여행 중 가장 중요하게 생각하는 요소"
+              },
+              "accommodation": {
+                "type": "string",
+                "description": "선호하는 숙박 시설"
+              },
+              "transport": {
+                "type": "string",
+                "description": "선호하는 이동 수단"
+              },
+              "companion": {
+                "type": "string",
+                "description": "동행자"
+              },
+              "favorite": {
+                "type": "string",
+                "description": "특히 마음에 들었던 여행지"
+              },
+              "favoriteReason": {
+                "type": "string",
+                "description": "마음에 들었던 이유"
+              },
+              "specialNeeds": {
+                "type": "string",
+                "description": "필요하거나 피하고 싶은 요소"
+              },
+              "recommendationType": {
+                "type": "string",
+                "description": "AI 추천 방식"
+              },
+              "freeTime": {
+                "type": "string",
+                "description": "여행 중 어느 정도의 자유 시간을 원하시나요?"
+              },
+              "importantFactors": {
+                "type": "string",
+                "description": "위 답변 중 가장 중요시 생각하는 단어"
+              }
+            },
+            "required": [
+              "schedule",
+              "groupComposition",
+              "purpose",
+              "budget",
+              "keyElement",
+              "accommodation",
+              "transport",
+              "companion",
+              "favorite",
+              "favoriteReason",
+              "specialNeeds",
+              "recommendationType",
+              "freeTime",
+              "importantFactors"
+            ]
+          },
+          "destination": {
+            "type": "object",
             "properties": {
               "region": {
                 "type": "string",
-                "description": "지역명"
+                "description": "지역"
               },
-              "district": {
+              "city": {
                 "type": "string",
-                "description": "도시명"
+                "description": "도시"
               },
               "points": {
                 "type": "array",
                 "items": {
                   "type": "string"
-                } 
-              ,
-                "description": "특징"
+                },
+                "description": "여행지 포인트"
               }
             },
-            "description": "여행지 정보"
+            "required": [
+              "region",
+              "city",
+              "points"
+            ]
           }
-        }
         },
         "required": [
-          "destinations"
+          "answers",
+          "destination"
         ]
       },
       "DetailedTravelInfoResponse": {
         "type": "object",
         "properties": {
-          "itinerary": {
+          "success": {
+            "type": "boolean",
+            "description": "요청 처리 성공 여부"
+          },
+          "data": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/RouteDto"
-            },
-            "description": "여행 루트 정보"
+              "type": "object",
+              "properties": {
+                "day": {
+                  "type": "integer",
+                  "description": "여행일"
+                },
+                "places": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "description": "장소 이름"
+                      },
+                      "hours": {
+                        "type": "string",
+                        "description": "영업 시간"
+                      },
+                      "attractions": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        },
+                        "description": "관광 명소"
+                      },
+                      "popularMenu": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        },
+                        "description": "인기 메뉴"
+                      },
+                      "recommendations": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        },
+                        "description": "추천 사항"
+                      }
+                    }
+                  }
+                }
+              }
+            }
           }
-        },
-        "description": "여행지에 대한 상세 여행 루트"
-      },
-      "RouteDto": {
-        "type": "object",
-        "properties": {
-          "day": {
-            "type": "string",
-            "description": "여행 일차"
-          },
-          "places": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/PlaceDto"
-            },
-            "description": "방문 장소들"
-          }
-        },
-        "required": [
-          "day",
-          "places"
-        ]
-      },
-      "PlaceDto": {
-        "type": "object",
-        "properties": {
-          "place": {
-            "type": "string",
-            "description": "장소명"
-          },
-          "hours": {
-            "type": "string",
-            "description": "영업 시간"
-          },
-          "attractions": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "description": "주변에 더 방문할 만한 추천 명소"
-          },
-          "popularMenu": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "description": "주변 인기 있는 메뉴"
-          },
-          "tips": {
-            "type": "string",
-            "description": "특별한 방문 팁"
-          }
-        },
-        "required": [
-          "place",
-          "hours",
-          "attractions",
-          "popularMenu",
-          "tips"
-        ]
+        }
       },
       "UploadImageRequest": {
         "type": "object",
         "properties": {
-          "image": {
+          "file": {
             "type": "string",
             "format": "binary",
             "description": "업로드할 이미지 파일"
           }
-        },
-        "required": [
-          "image"
-        ]
+        }
       },
       "UploadImageResponse": {
         "type": "object",
         "properties": {
-          "imageUrl": {
+          "url": {
             "type": "string",
             "description": "업로드된 이미지의 URL"
           }
         }
-      },
-      "DetailResponse": {
-        "type": "object",
-        "properties": {
-          "region": {
-            "type": "string",
-            "description": "지역명"
-          },
-          "city": {
-            "type": "string",
-            "description": "도시명"
-          },
-          "places": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "description": "방문 장소들"
-          },
-          "gptComment": {
-            "type": "object",
-            "properties": {
-              "traffic": {
-                "type": "string",
-                "description": "교통 관련 정보"
-              },
-              "hotel": {
-                "type": "string",
-                "description": "숙박 관련 정보"
-              },
-              "food": {
-                "type": "string",
-                "description": "음식 관련 정보"
-              }
-            },
-            "description": "여행지에 대한 교통, 숙박, 음식 정보"
-          }
-        },
-        "required": [
-
-          "region",
-          "city",
-          "places"
-        ]
       }
     }
   }
