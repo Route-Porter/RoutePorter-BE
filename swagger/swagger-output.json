@@ -212,55 +212,106 @@
                         }
                       }
                     },
-                    "tourData": {
-                      "type": "array",
-                      "items": {
+                    
+                      "tourData": {
                         "type": "object",
                         "properties": {
-                          "day": {
-                            "type": "integer",
-                            "description": "여행일"
-                          },
-                          "places": {
+                          "item": {
                             "type": "array",
                             "items": {
                               "type": "object",
                               "properties": {
-                                "name": {
+                                "addr1": {
                                   "type": "string",
-                                  "description": "장소 이름"
+                                  "description": "주소"
                                 },
-                                "hours": {
+                                "addr2": {
                                   "type": "string",
-                                  "description": "영업 시간"
+                                  "description": "추가 주소"
                                 },
-                                "attractions": {
-                                  "type": "array",
-                                  "items": {
-                                    "type": "string"
-                                  },
-                                  "description": "관광 명소"
+                                "areacode": {
+                                  "type": "string",
+                                  "description": "지역 코드"
                                 },
-                                "popularMenu": {
-                                  "type": "array",
-                                  "items": {
-                                    "type": "string"
-                                  },
-                                  "description": "인기 메뉴"
+                                "booktour": {
+                                  "type": "string",
+                                  "description": "예약 정보"
                                 },
-                                "recommendations": {
-                                  "type": "array",
-                                  "items": {
-                                    "type": "string"
-                                  },
-                                  "description": "추천 사항"
+                                "cat1": {
+                                  "type": "string",
+                                  "description": "카테고리 1"
+                                },
+                                "cat2": {
+                                  "type": "string",
+                                  "description": "카테고리 2"
+                                },
+                                "cat3": {
+                                  "type": "string",
+                                  "description": "카테고리 3"
+                                },
+                                "contentid": {
+                                  "type": "string",
+                                  "description": "콘텐츠 ID"
+                                },
+                                "contenttypeid": {
+                                  "type": "string",
+                                  "description": "콘텐츠 유형 ID"
+                                },
+                                "createdtime": {
+                                  "type": "string",
+                                  "format": "date-time",
+                                  "description": "생성 시간"
+                                },
+                                "firstimage": {
+                                  "type": "string",
+                                  "format": "uri",
+                                  "description": "첫 번째 이미지 URL"
+                                },
+                                "firstimage2": {
+                                  "type": "string",
+                                  "format": "uri",
+                                  "description": "두 번째 이미지 URL"
+                                },
+                                "cpyrhtDivCd": {
+                                  "type": "string",
+                                  "description": "저작권 구분 코드"
+                                },
+                                "mapx": {
+                                  "type": "string",
+                                  "description": "X 좌표"
+                                },
+                                "mapy": {
+                                  "type": "string",
+                                  "description": "Y 좌표"
+                                },
+                                "mlevel": {
+                                  "type": "string",
+                                  "description": "맵 레벨"
+                                },
+                                "modifiedtime": {
+                                  "type": "string",
+                                  "format": "date-time",
+                                  "description": "수정 시간"
+                                },
+                                "sigungucode": {
+                                  "type": "string",
+                                  "description": "시군구 코드"
+                                },
+                                "tel": {
+                                  "type": "string",
+                                  "description": "전화번호"
+                                },
+                                "title": {
+                                  "type": "string",
+                                  "description": "제목"
                                 }
                               }
                             }
                           }
                         }
                       }
-                    }
+                    
+                  
                   },
                   "required": ["gptComment", "tourData"]
                 }
