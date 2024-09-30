@@ -11,12 +11,12 @@
       "description": "Local development server"
     },
     {
-      "url": "https://routeport.co.kr",
+      "url": "https://api.routeport.co.kr",
       "description": "Production server"
     }
   ],
   "paths": {
-    "/api/chat": {
+    "/chat": {
       "post": {
         "summary": "여행지 추천 요청",
         "description": "사용자 요청에 따라 추천 여행지를 제공합니다.",
@@ -47,7 +47,7 @@
         }
       }
     },
-    "/api/routes": {
+    "/routes": {
       "post": {
         "summary": "여행지 루트 조회",
         "description": "주어진 여행지 정보를 기반으로 상세 여행 루트를 제공합니다.",
@@ -81,7 +81,7 @@
         }
       }
     },
-    "/api/routes/share": {
+    "/routes/share": {
       "post": {
         "summary": "여행지 루트 공유",
         "description": "사용자가 생성한 여행지 루트를 공유하는 기능으로, 공유된 루트는 이미지로 저장되고 URL이 제공됩니다.",
@@ -115,7 +115,7 @@
         }
       }
     },
-    "/api/detail": {
+    "/detail": {
       "get": {
         "summary": "상세정보 조회",
         "description": "주어진 지역과 특징을 기반으로 상세 정보를 조회합니다.",
