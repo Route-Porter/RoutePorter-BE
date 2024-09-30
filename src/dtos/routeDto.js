@@ -1,24 +1,21 @@
 export class routeDto{
    constructor(
-      {day, places}
+      {day, places,foods}
    ) {
       this.day = day;
       this.places= places;
+      this.foods=foods;
    }
 }
 
 export class placeDto{
    constructor({
-      place,
+      name,
       hours,
-      attractions,
-      popularMenu,
       tips
                }){
-      this.place=place;
+      this.name=name;
       this.hours=hours;
-      this.attractions=attractions;
-      this.popularMenu=popularMenu;
       this.tips=tips;
    }
 }
