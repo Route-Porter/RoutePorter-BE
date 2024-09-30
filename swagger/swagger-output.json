@@ -637,6 +637,10 @@
                       }
                     }
                   }
+                },
+                "foods": {
+                  "type": "array",
+                          "description": "유명 음식"
                 }
               }
             }
