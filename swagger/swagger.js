@@ -11,7 +11,7 @@ const doc = {
       description: "Local development server"
     },
     {
-      url: "https://routeport.co.kr",
+      url: "https://api.routeport.co.kr",
       description: "Production server"
     }
   ],

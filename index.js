@@ -30,19 +30,18 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 
-// 라우터 설정
-app.use('/api/routes', route);
-app.use('/api', chatRoutes);
-app.use('/api', askRoute);
-
-
-app.get('/api', (req, res, next) => {
-    res.send(response(status.SUCCESS, "루트 페이지!"));
-})
-
 // Swagger 문서 설정
-app.use('/api/swagger', swaggerUi.serve, swaggerUi.setup(swaggerFile))
+app.use('/swagger', swaggerUi.serve, swaggerUi.setup(swaggerFile));
 
+// 라우터 설정
+app.use('/routes', route);
+app.use('/', chatRoutes);
+app.use('/', askRoute);
+
+// 루트 페이지 핸들러
+app.get('/', (req, res, next) => {
+    res.send(response(status.SUCCESS, "루트 페이지!"));
+});
 
 // 서버 시작
 app.listen(port, () => {
