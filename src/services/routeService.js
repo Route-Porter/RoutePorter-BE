@@ -1,5 +1,5 @@
-import chatProvider from "../providers/chatProvider";
-import {parseTravelRoute} from "../utils/parser";
+import chatProvider from "../providers/chatProvider.js";
+import {parseTravelRoute} from "../utils/parser.js";
 
 class routeService{
    async getDetailedTravelInfo(destinations) {
