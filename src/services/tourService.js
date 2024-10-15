@@ -20,6 +20,7 @@ class TourService {
       arrange: "A",
       keyword: detailDTO.district,
       _type: "JSON",
+      contentTypeId: 12
     });
     const url = `http://apis.data.go.kr/B551011/KorService1/searchKeyword1?${qs}`;
 
