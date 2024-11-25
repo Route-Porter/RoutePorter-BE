@@ -2,7 +2,7 @@
   "openapi": "3.0.0",
   "info": {
     "title": "Route Porter API",
-    "description": "Route Porter API 설명",
+    "description": "API for generating and sharing travel routes.",
     "version": "1.0.0"
   },
   "servers": [
@@ -11,7 +11,7 @@
       "description": "Local development server"
     },
     {
-      "url": "https://routeport.co.kr",
+      "url": "https://api.routeport.co.kr",
       "description": "Production server"
     }
   ],
@@ -74,6 +74,9 @@
           },
           "400": {
             "description": "잘못된 요청"
+          },
+          "500": {
+            "description": "서버 오류, 여행 루트 생성 실패"
           }
         }
       }
@@ -114,11 +117,40 @@
     },
     "/detail": {
       "get": {
-        "summary": "여행지 상세 정보 요청",
-        "description": "여행지에 대한 상세 정보를 제공합니다. 여행지의 교통, 숙박, 음식, 그리고 주요 관광명소에 대한 정보를 포함합니다.",
+        "summary": "상세정보 조회",
+        "description": "주어진 지역과 특징을 기반으로 상세 정보를 조회합니다.",
+        "parameters": [
+          {
+            "name": "region",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "여행 지역"
+            }
+          },
+          {
+            "name": "district",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "여행 도시"
+            }
+          },
+          {
+            "name": "features",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "JSON 문자열로 된 특징 배열 (예: '[\"해변\", \"자연\", \"해산물\"]')"
+            }
+          }
+        ],
         "responses": {
           "200": {
-            "description": "성공적인 응답, 여행지에 대한 상세 정보가 반환됩니다.",
+            "description": "성공적인 응답",
             "content": {
               "application/json": {
                 "schema": {
@@ -128,123 +160,180 @@
                       "type": "object",
                       "properties": {
                         "traffic": {
-                          "type": "string",
-                          "example": "교통수단: \n창원에서는 다양한 교통수단을 이용할 수 있습니다. 창원은 대중교통이 잘 발달해 있고, 주변 여행지를 효율적으로 이동할 수 있습니다. 또한, 창원 중심부에서는 걸어서도 주요 관광지를 찾아볼 수 있습니다.\n[목록]\n1. 한국철도공사 (korail.com)\n2. 창원시시내버스정보 (cwbus.changwon.go.kr)\n3. 창원시택시서비스 (taxi.changwon.go.kr)\n4. 대한항공 (kr.koreanair.com)\n5. 창원지하철 (changwonmetro.go.kr)\n\n"
+                          "type": "object",
+                          "properties": {
+                            "reason": {
+                              "type": "string",
+                              "description": "교통수단 추천 이유"
+                            },
+                            "sites": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              },
+                              "description": "교통수단 사이트 목록"
+                            }
+                          }
                         },
                         "hotel": {
-                          "type": "string",
-                          "example": "숙박시설: \n창원에는 다양한 숙박시설이 있으며, 사용자의 기호에 맞춰 선택하실 수 있습니다. 편안한 호텔부터 특색 있는 게스트하우스, 로컬이 주는 따뜻한 환대를 느낄 수 있는 민박 등 다양한 숙박시설이 준비되어 있습니다.\n[목록]\n1. 창원호텔 (changwonhotel.com)\n2. 창원 게스트하우스 (changwonguesthouse.com)\n3. 창원시민박협회 (changwonminbak.com)\n4. 창원 센트럴 파크 호텔 (centralparkhotel.co.kr)\n5. 풀만 앰배서더 창원 (pullmanchangwon.com)\n\n"
+                          "type": "object",
+                          "properties": {
+                            "reason": {
+                              "type": "string",
+                              "description": "숙박시설 추천 이유"
+                            },
+                            "sites": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              },
+                              "description": "숙박시설 사이트 목록"
+                            }
+                          }
                         },
                         "food": {
-                          "type": "string",
-                          "example": "유명음식: \n1. 해물탕 - 지리영어탕, 용마랑, 낙동강식당, 고래식당, 모락식당\n2. 간장게장 - 부영식당, 해우리, 청해수산, 평산식당, J's Crab \n3. 산낙지 - 산성횟집, 진낙성, 창원산낙지, 산낙지마을, 미진산낙지\n4. 명태회 - 명일전복, 창원명태회, 명물식당, 묵호직영점, 명태회마을\n5. 굴구이 - 굴바위, 굴구이마을, 롯데리아 창원점, G&J Korean BBQ, 청해 수산"
-                        }
-                      }
-                    },
-                    "tourData": {
-                      "type": "object",
-                      "properties": {
-                        "item": {
                           "type": "array",
                           "items": {
                             "type": "object",
                             "properties": {
-                              "addr1": {
+                              "foodName": {
                                 "type": "string",
-                                "example": "경상남도 창원시 성산구 창원천로94번길 19"
+                                "description": "음식 이름"
                               },
-                              "addr2": {
-                                "type": "string",
-                                "example": ""
-                              },
-                              "areacode": {
-                                "type": "string",
-                                "example": "36"
-                              },
-                              "booktour": {
-                                "type": "string",
-                                "example": ""
-                              },
-                              "cat1": {
-                                "type": "string",
-                                "example": "A04"
-                              },
-                              "cat2": {
-                                "type": "string",
-                                "example": "A0401"
-                              },
-                              "cat3": {
-                                "type": "string",
-                                "example": "A04011000"
-                              },
-                              "contentid": {
-                                "type": "string",
-                                "example": "3306848"
-                              },
-                              "contenttypeid": {
-                                "type": "string",
-                                "example": "38"
-                              },
-                              "createdtime": {
-                                "type": "string",
-                                "format": "date-time",
-                                "example": "2024-02-21T20:25:45Z"
-                              },
-                              "firstimage": {
-                                "type": "string",
-                                "format": "uri",
-                                "example": "http://tong.visitkorea.or.kr/cms/resource/34/3313334_image2_1.jpg"
-                              },
-                              "firstimage2": {
-                                "type": "string",
-                                "format": "uri",
-                                "example": "http://tong.visitkorea.or.kr/cms/resource/34/3313334_image3_1.jpg"
-                              },
-                              "cpyrhtDivCd": {
-                                "type": "string",
-                                "example": "Type3"
-                              },
-                              "mapx": {
-                                "type": "string",
-                                "example": "128.6534026655"
-                              },
-                              "mapy": {
-                                "type": "string",
-                                "example": "35.2395226893"
-                              },
-                              "mlevel": {
-                                "type": "string",
-                                "example": "6"
-                              },
-                              "modifiedtime": {
-                                "type": "string",
-                                "format": "date-time",
-                                "example": "2024-06-21T23:39:43Z"
-                              },
-                              "sigungucode": {
-                                "type": "string",
-                                "example": "16"
-                              },
-                              "tel": {
-                                "type": "string",
-                                "example": ""
-                              },
-                              "title": {
-                                "type": "string",
-                                "example": "올리브영 창원시티세븐"
+                              "shops": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                },
+                                "description": "가게 목록"
                               }
                             }
                           }
                         }
                       }
-                    }
-                  }
+                    },
+                    
+                      "tourData": {
+                        "type": "object",
+                        "properties": {
+                          "item": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "addr1": {
+                                  "type": "string",
+                                  "description": "주소"
+                                },
+                                "addr2": {
+                                  "type": "string",
+                                  "description": "추가 주소"
+                                },
+                                "areacode": {
+                                  "type": "string",
+                                  "description": "지역 코드"
+                                },
+                                "booktour": {
+                                  "type": "string",
+                                  "description": "예약 정보"
+                                },
+                                "cat1": {
+                                  "type": "string",
+                                  "description": "카테고리 1"
+                                },
+                                "cat2": {
+                                  "type": "string",
+                                  "description": "카테고리 2"
+                                },
+                                "cat3": {
+                                  "type": "string",
+                                  "description": "카테고리 3"
+                                },
+                                "contentid": {
+                                  "type": "string",
+                                  "description": "콘텐츠 ID"
+                                },
+                                "contenttypeid": {
+                                  "type": "string",
+                                  "description": "콘텐츠 유형 ID"
+                                },
+                                "createdtime": {
+                                  "type": "string",
+                                  "format": "date-time",
+                                  "description": "생성 시간"
+                                },
+                                "firstimage": {
+                                  "type": "string",
+                                  "format": "uri",
+                                  "description": "첫 번째 이미지 URL"
+                                },
+                                "firstimage2": {
+                                  "type": "string",
+                                  "format": "uri",
+                                  "description": "두 번째 이미지 URL"
+                                },
+                                "cpyrhtDivCd": {
+                                  "type": "string",
+                                  "description": "저작권 구분 코드"
+                                },
+                                "mapx": {
+                                  "type": "string",
+                                  "description": "X 좌표"
+                                },
+                                "mapy": {
+                                  "type": "string",
+                                  "description": "Y 좌표"
+                                },
+                                "mlevel": {
+                                  "type": "string",
+                                  "description": "맵 레벨"
+                                },
+                                "modifiedtime": {
+                                  "type": "string",
+                                  "format": "date-time",
+                                  "description": "수정 시간"
+                                },
+                                "sigungucode": {
+                                  "type": "string",
+                                  "description": "시군구 코드"
+                                },
+                                "tel": {
+                                  "type": "string",
+                                  "description": "전화번호"
+                                },
+                                "title": {
+                                  "type": "string",
+                                  "description": "제목"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    
+                  
+                  },
+                  "required": ["gptComment", "tourData"]
                 }
               }
             }
           },
           "400": {
-            "description": "잘못된 요청"
+            "description": "잘못된 요청",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "description": "오류 메시지"
+                    }
+                  },
+                  "required": ["error"]
+                }
+              }
+            }
           }
         }
       }
@@ -252,7 +341,7 @@
   },
   "components": {
     "schemas": {
-"ChatDto": {
+      "ChatDto": {
         "type": "object",
         "properties": {
           "schedule": {
@@ -340,10 +429,8 @@
           "specialNeeds",
           "recommendationType",
           "freeTime",
-          "importantFactors",
-          "destinations"
+          "importantFactors"
         ]
-  
       },
       "TravelRecommendations": {
         "type": "object",
@@ -361,7 +448,7 @@
                   "type": "string",
                   "description": "도시명"
                 },
-                "features": {
+                "points": {
                   "type": "array",
                   "items": {
                     "type": "string"
@@ -374,169 +461,210 @@
         }
       },
       "DetailedTravelInfoRequest": {
-      "type": "object",
+        "type": "object",
         "properties": {
-          "destinations": {
+          "answers": {
+            "type": "object",
+            "properties": {
+              "schedule": {
+                "type": "string",
+                "description": "일정 정보"
+              },
+              "groupComposition": {
+                "type": "object",
+                "properties": {
+                  "adults": {
+                    "type": "integer",
+                    "description": "성인 수"
+                  },
+                  "children": {
+                    "type": "integer",
+                    "description": "어린이 수"
+                  },
+                  "infants": {
+                    "type": "integer",
+                    "description": "유아 수"
+                  }
+                },
+                "description": "상세 인원 정보"
+              },
+              "purpose": {
+                "type": "string",
+                "description": "여행의 목적"
+              },
+              "budget": {
+                "type": "string",
+                "description": "여행 예산"
+              },
+              "keyElement": {
+                "type": "string",
+                "description": "여행 중 가장 중요하게 생각하는 요소"
+              },
+              "accommodation": {
+                "type": "string",
+                "description": "선호하는 숙박 시설"
+              },
+              "transport": {
+                "type": "string",
+                "description": "선호하는 이동 수단"
+              },
+              "companion": {
+                "type": "string",
+                "description": "동행자"
+              },
+              "favorite": {
+                "type": "string",
+                "description": "특히 마음에 들었던 여행지"
+              },
+              "favoriteReason": {
+                "type": "string",
+                "description": "마음에 들었던 이유"
+              },
+              "specialNeeds": {
+                "type": "string",
+                "description": "필요하거나 피하고 싶은 요소"
+              },
+              "recommendationType": {
+                "type": "string",
+                "description": "AI 추천 방식"
+              },
+              "freeTime": {
+                "type": "string",
+                "description": "여행 중 어느 정도의 자유 시간을 원하시나요?"
+              },
+              "importantFactors": {
+                "type": "string",
+                "description": "위 답변 중 가장 중요시 생각하는 단어"
+              }
+            },
+            "required": [
+              "schedule",
+              "groupComposition",
+              "purpose",
+              "budget",
+              "keyElement",
+              "accommodation",
+              "transport",
+              "companion",
+              "favorite",
+              "favoriteReason",
+              "specialNeeds",
+              "recommendationType",
+              "freeTime",
+              "importantFactors"
+            ]
+          },
+          "destination": {
             "type": "object",
             "properties": {
               "region": {
                 "type": "string",
-                "description": "지역명"
+                "description": "지역"
               },
               "city": {
                 "type": "string",
-                "description": "도시명"
+                "description": "도시"
               },
               "points": {
                 "type": "array",
                 "items": {
                   "type": "string"
                 },
-                "description": "특징"
+                "description": "여행지 포인트"
               }
             },
-            "description": "여행지 정보"
+            "required": [
+              "region",
+              "city",
+              "points"
+            ]
           }
         },
         "required": [
-          "destinations"
+          "answers",
+          "destination"
         ]
       },
       "DetailedTravelInfoResponse": {
         "type": "object",
         "properties": {
-          "itinerary": {
+          "success": {
+            "type": "boolean",
+            "description": "요청 처리 성공 여부"
+          },
+          "data": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/RouteDto"
-            },
-            "description": "여행 루트 정보"
+              "type": "object",
+              "properties": {
+                "day": {
+                  "type": "integer",
+                  "description": "여행일"
+                },
+                "places": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "description": "장소 이름"
+                      },
+                      "hours": {
+                        "type": "string",
+                        "description": "영업 시간"
+                      },
+                      "attractions": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        },
+                        "description": "관광 명소"
+                      },
+                      "popularMenu": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        },
+                        "description": "인기 메뉴"
+                      },
+                      "recommendations": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        },
+                        "description": "추천 사항"
+                      }
+                    }
+                  }
+                },
+                "foods": {
+                  "type": "array",
+                          "description": "유명 음식"
+                }
+              }
+            }
           }
-        },
-        "description": "여행지에 대한 상세 여행 루트"
-      },
-      "RouteDto": {
-        "type": "object",
-        "properties": {
-          "day": {
-            "type": "string",
-            "description": "여행 일차"
-          },
-          "places": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/PlaceDto"
-            },
-            "description": "방문 장소들"
-          }
-        },
-        "required": [
-          "day",
-          "places"
-        ]
-      },
-      "PlaceDto": {
-        "type": "object",
-        "properties": {
-          "place": {
-            "type": "string",
-            "description": "장소명"
-          },
-          "hours": {
-            "type": "string",
-            "description": "영업 시간"
-          },
-          "attractions": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "description": "주변에 더 방문할 만한 추천 명소"
-          },
-          "popularMenu": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "description": "주변 인기 있는 메뉴"
-          },
-          "tips": {
-            "type": "string",
-            "description": "특별한 방문 팁"
-          }
-        },
-        "required": [
-          "place",
-          "hours",
-          "attractions",
-          "popularMenu",
-          "tips"
-        ]
+        }
       },
       "UploadImageRequest": {
         "type": "object",
         "properties": {
-          "image": {
+          "file": {
             "type": "string",
             "format": "binary",
             "description": "업로드할 이미지 파일"
           }
-        },
-        "required": [
-          "image"
-        ]
+        }
       },
       "UploadImageResponse": {
         "type": "object",
         "properties": {
-          "imageUrl": {
+          "url": {
             "type": "string",
             "description": "업로드된 이미지의 URL"
           }
         }
-      },
-      "DetailResponse": {
-        "type": "object",
-        "properties": {
-          "region": {
-            "type": "string",
-            "description": "지역명"
-          },
-          "city": {
-            "type": "string",
-            "description": "도시명"
-          },
-          "places": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "description": "방문 장소들"
-          },
-          "gptComment": {
-            "type": "object",
-            "properties": {
-              "traffic": {
-                "type": "string",
-                "description": "교통 관련 정보"
-              },
-              "hotel": {
-                "type": "string",
-                "description": "숙박 관련 정보"
-              },
-              "food": {
-                "type": "string",
-                "description": "음식 관련 정보"
-              }
-            },
-            "description": "여행지에 대한 교통, 숙박, 음식 정보"
-          }
-        },
-        "required": [
-          "region",
-          "city",
-          "places"
-        ]
       }
     }
   }
