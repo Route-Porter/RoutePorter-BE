@@ -47,7 +47,7 @@ app.use('/routes', route);
 app.use(chatRoutes);
 app.use(askRoute);
 
-app.get('/auth/kakao', async (req, res) => {
+app.get('/oauth', async (req, res) => {
     const code = req.query.code;
     try {
         // Access token 가져오기
