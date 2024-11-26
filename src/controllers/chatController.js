@@ -1,6 +1,6 @@
 import { sendResponse, sendErrorResponse } from '../../config/response.js';
 import chatService from '../services/chatService.js';
-import routeService from "../services/routeService";
+import routeService from "../services/routeService.js";
 
 export async function getRecommendations(req, res) {
     try {
