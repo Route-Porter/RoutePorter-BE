@@ -2,7 +2,6 @@
   "name": "routeporter",
   "version": "1.0.0",
   "main": "index.js",
-  "type": "module",
   "scripts": {
     "start:dev": "nodemon --exec babel-node index.js",
     "start:dist": "webpack --mode production & node ./dist/main.js",
@@ -41,11 +40,13 @@
   },
   "devDependencies": {
     "@babel/cli": "^7.24.8",
-    "@babel/core": "^7.25.2",
+    "@babel/core": "^7.26.0",
     "@babel/node": "^7.25.0",
+    "@babel/plugin-syntax-import-assertions": "^7.26.0",
     "@babel/plugin-syntax-import-attributes": "^7.24.7",
     "@babel/plugin-transform-modules-commonjs": "^7.24.8",
-    "@babel/preset-env": "^7.25.3",
+    "@babel/preset-env": "^7.26.0",
+    "babel-loader": "^9.2.1",
     "swagger-cli": "^4.0.4",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1",

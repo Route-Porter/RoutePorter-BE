@@ -16,6 +16,130 @@
     }
   ],
   "paths": {
+    "/auth/kakao": {
+      "get": {
+        "summary": "카카오 인증 요청",
+        "description": "사용자가 카카오 인증을 통해 로그인하거나 계정을 생성할 수 있도록 처리합니다.",
+        "parameters": [
+          {
+            "name": "code",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "카카오에서 전달받은 인증 코드"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "성공적인 인증 처리 및 리다이렉트",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "User added successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "서버 내부 오류",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Internal Server Error"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/user/nickname": {
+      "post": {
+        "summary": "사용자 닉네임 업데이트",
+        "description": "로그인된 사용자의 닉네임을 업데이트합니다.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "nickname": {
+                    "type": "string",
+                    "description": "업데이트할 새로운 닉네임",
+                    "example": "new_nickname"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "닉네임 업데이트 성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Nickname updated successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "잘못된 요청",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Nickname is required"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "서버 내부 오류",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Internal Server Error"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/chat": {
       "post": {
         "summary": "여행지 추천 요청",
