@@ -47,7 +47,7 @@ app.use('/routes', route);
 app.use(chatRoutes);
 app.use(askRoute);
 
-app.get('/api/auth/kakao', async (req, res) => {
+app.get('/auth/kakao', async (req, res) => {
     const code = req.query.code;
     try {
         // Access token 가져오기
@@ -117,7 +117,7 @@ app.get('/api/auth/kakao', async (req, res) => {
 });
 
 // user_nick 업데이트 처리
-app.post('/api/user/nickname', async (req, res) => {
+app.post('/user/nickname', async (req, res) => {
     const userId = req.session.userId; // 로그인한 사용자의 ID
     const { nickname } = req.body; // 사용자로부터 받은 닉네임
 
