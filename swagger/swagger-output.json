@@ -16,7 +16,7 @@
     }
   ],
   "paths": {
-    "/auth/kakao": {
+    "/oauth": {
       "get": {
         "summary": "카카오 인증 요청",
         "description": "사용자가 카카오 인증을 통해 로그인하거나 계정을 생성할 수 있도록 처리합니다.",
