@@ -6,10 +6,10 @@ dotenv.config();
 
 // MySQL 연결 설정
 const db = mysql.createPool({
-   host: process.env.TEST_DB_HOST,         // .env에 설정한 값
-   user: process.env.TEST_DB_USER,
-   password: process.env.TEST_DB_PASSWORD,
-   database: process.env.TEST_DB_NAME,
+   host: process.env.DEV_DB_HOST,         // .env에 설정한 값
+   user: process.env.DEV_DB_USERNAME,
+   password: process.env.DEV_DB_PASSWORD,
+   database: process.env.DEV_DB_DATABASE,
    waitForConnections: true,
    connectionLimit: 10,
    queueLimit: 0,
@@ -19,10 +19,10 @@ const db = mysql.createPool({
 (async () => {
    try {
       const connection = await mysql.createConnection({
-         host: process.env.TEST_DB_HOST,
-         user: process.env.TEST_DB_USER,
-         password: process.env.TEST_DB_PASSWORD,
-         database: process.env.TEST_DB_NAME
+         host: process.env.DEV_DB_HOST,
+         user: process.env.DEV_DB_USERNAME,
+         password: process.env.DEV_DB_PASSWORD,
+         database: process.env.DEV_DB_DATABASE
       });
       console.log("데이터베이스 연결 성공!");
       await connection.end(); // 연결 종료

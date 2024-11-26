@@ -12,8 +12,7 @@ import askRoute from './src/routes/detailRoutes.js';
 import { response } from './config/response.js';
 import multer from 'multer';
 import Axios from "axios";
-import cors from 'cors';
-import db from './config/db.js';
+// import db from './config/db.js';
 
 dotenv.config();
 
@@ -61,8 +60,8 @@ app.get('/api/auth/kakao', async (req, res) => {
                 redirect_uri: process.env.KAKAO_REDIRECT_URI
             }
         });
-        console.log('Token Response:', tokenResponse.data); // 응답 로그 출력
 
+        // 사용자 정보 가져오기
         const userResponse = await Axios.post('https://kapi.kakao.com/v2/user/me', {}, {
             headers: {
                 "Content-Type": "application/x-www-form-urlencoded",
@@ -70,39 +69,46 @@ app.get('/api/auth/kakao', async (req, res) => {
             }
         });
 
-        console.log('User Data:', userResponse.data); // 사용자 데이터 로그 출력
-
         const userData = userResponse.data;
         const snsPrimaryKey = userData.id; // 카카오 사용자 ID
         const snsType = 'kakao'; // snsType은 항상 kakao로 설정
-        const nickname = userData.properties.nickname; // 카카오 사용자 닉네임
+        const userName = userData.properties.nickname; // 카카오 사용자 닉네임
+        const email = userData.user_email || null; // 카카오 이메일 (없으면 null)
+        const gender = userData.user_gender || null; // 카카오 성별 (선택 사항)
+        const birthday = userData.user_birthday || null; // 카카오 생일 (선택 사항)
+        const nick = userData.user_nick ||null;
 
-        const row = (await db.query(`SELECT * FROM user WHERE snsPrimaryKey=? AND snsType="kakao"`, [snsPrimaryKey]))[0];
+        // sign_id는 랜덤으로 생성 (예: UUID 또는 랜덤 문자열)
+        const signId = `sign_${Math.random().toString(36).substr(2, 9)}`;
 
-        // console.log(row);
-
-        if (row.length>0) {
-            // console.log("row가 있다고 판단");
-            req.session.userId = row.id;
+        // 카카오로 로그인한 사용자가 이미 데이터베이스에 존재하는지 확인
+        const row = await db.sequelize.query(
+           `SELECT * FROM users WHERE snsPrimaryKey=? AND snsType="kakao"`,
+           { replacements: [snsPrimaryKey], type: db.Sequelize.QueryTypes.SELECT }
+        );
+        console.log('Row:', row);
+        if (row.length > 0) {
+            // 기존 사용자일 경우, session에 userId 저장
+            req.session.userId = row[0].id;
             req.session.save((err) => {
                 if (err) {
                     console.error('Session Save Error:', err);
                     return res.status(500).json({ message: 'Session save failed' });
                 }
-                res.redirect('http://localhost:4100');
+                res.redirect('http://localhost:4100'); // 로그인 후 리다이렉트
             });
         } else {
-            try {
-                await db.query(
-                    `INSERT INTO user (snsPrimaryKey, snsType, nickname) VALUES (?, ?, ?)`,
-                    [snsPrimaryKey, snsType, nickname]
-                );
-                console.log('User added to database');
-                res.status(200).json({ message: 'User added successfully' });
-            } catch (error) {
-                console.error('DB Insert Error:', error);
-                return res.status(500).json({ message: 'Database error occurred during user insertion' });
-            }
+            // 새로운 사용자일 경우, 기본 정보만 저장
+            await db.sequelize.query(
+               `INSERT INTO users (sign_id, user_name, user_email, user_nick, user_gender, user_birthday, snsPrimaryKey, snsType)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+               {
+                   replacements: [signId, userName, email, userName, gender, birthday, snsPrimaryKey, snsType],
+                   type: db.Sequelize.QueryTypes.INSERT
+               }
+            );
+            console.log('User added to database');
+            res.status(200).json({ message: 'User added successfully' });
         }
     } catch (error) {
         console.error('Login Error:', error.message);
@@ -110,6 +116,30 @@ app.get('/api/auth/kakao', async (req, res) => {
     }
 });
 
+// user_nick 업데이트 처리
+app.post('/api/user/nickname', async (req, res) => {
+    const userId = req.session.userId; // 로그인한 사용자의 ID
+    const { nickname } = req.body; // 사용자로부터 받은 닉네임
+
+    if (!nickname) {
+        return res.status(400).json({ message: 'Nickname is required' });
+    }
+
+    try {
+        // 닉네임 업데이트
+        await db.sequelize.query(
+           `UPDATE users SET nickname = ? WHERE id = ?`,
+           {
+               replacements: [nickname, userId],
+               type: db.Sequelize.QueryTypes.UPDATE
+           }
+        );
+        res.status(200).json({ message: 'Nickname updated successfully' });
+    } catch (error) {
+        console.error('Error updating nickname:', error);
+        res.status(500).json({ message: 'Internal Server Error' });
+    }
+});
 
 // Swagger 문서 설정
 app.use('/swagger', swaggerUi.serve, swaggerUi.setup(swaggerFile));

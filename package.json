@@ -31,9 +31,8 @@
     "nunjucks": "^3.2.4",
     "openai": "^4.55.4",
     "path": "^0.12.7",
-
-    "qs": "^6.13.1",
     "pm2": "^5.4.2",
+    "qs": "^6.13.1",
     "sequelize": "^6.37.3",
     "sequelize-cli": "^6.6.2",
     "swagger-autogen": "^2.23.7",
